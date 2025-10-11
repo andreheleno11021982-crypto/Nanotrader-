@@ -1,34 +1,30 @@
 name: Android debug build
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          distribution: temurin
-          java-version: 17
+          node-version: 18
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install dependencies
+        run: npm install
 
       - name: Build APK
-        run: |
-          cd $GITHUB_WORKSPACE
-          ./gradlew assembleDebug || echo "Gradle not found, placeholder APK"
-
-          mkdir -p output
-          echo "Placeholder APK for NanoTrader" > output/nanotrader-app-debug.apk
+        run: npx expo run:android --no-install
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: nanotrader-app-debug.apk
-          path: output/nanotrader-app-debug.apk
+          name: nanotrader-app-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
