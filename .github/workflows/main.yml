@@ -1,17 +1,18 @@
 
-name: NanoTrader Pro - Criar APK para Android
+name: NanoTrader Pro - EAS Build (APK)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Baixar código do repositório
+      - name: Baixar o código do repositório
         uses: actions/checkout@v4
 
       - name: Instalar Node.js
@@ -19,19 +20,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Entrar na pasta do app
-        run: cd NanoTrader && ls
+      - name: Instalar Expo CLI e EAS CLI
+        run: |
+          npm install -g expo-cli eas-cli
+          npm install
 
-      - name: Instalar dependências
-        working-directory: NanoTrader
-        run: npm install
+      - name: Login no EAS (modo anônimo)
+        run: eas whoami || echo "Continuando sem login"
 
-      - name: Construir APK Android
-        working-directory: NanoTrader
-        run: npx expo prebuild && npx expo run:android --variant release
+      - name: Criar build APK
+        run: eas build --platform android --profile preview --non-interactive
 
-      - name: Salvar APK como artefato
-        uses: actions/upload-artifact@v4
-        with:
-          name: NanoTraderPro-APK
-          path: NanoTrader/android/app/build/outputs/apk/release/app-release.apk
+      - name: Upload do APK
+        if: success()
+        run: echo "✅ Build concluído! Baixe o APK no painel do EAS."
