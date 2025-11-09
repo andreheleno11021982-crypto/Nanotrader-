@@ -1,4 +1,3 @@
-
 name: NanoTrader Pro - EAS Build (APK)
 
 on:
@@ -20,17 +19,18 @@ jobs:
         with:
           node-version: 18
 
-      - name: Instalar Expo CLI e EAS CLI
+      - name: Entrar na pasta do app
+        run: cd NanoTrader && ls
+
+      - name: Instalar dependências e Expo
+        working-directory: NanoTrader
         run: |
           npm install -g expo-cli eas-cli
           npm install
 
-      - name: Login no EAS (modo anônimo)
-        run: eas whoami || echo "Continuando sem login"
-
-      - name: Criar build APK
+      - name: Criar build APK (EAS)
+        working-directory: NanoTrader
         run: eas build --platform android --profile preview --non-interactive
 
-      - name: Upload do APK
-        if: success()
-        run: echo "✅ Build concluído! Baixe o APK no painel do EAS."
+      - name: Finalizar
+        run: echo "✅ Build concluído! Verifique o link do APK no log acima."
