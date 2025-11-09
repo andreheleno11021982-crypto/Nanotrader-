@@ -19,14 +19,19 @@ jobs:
         with:
           node-version: 18
 
+      - name: Entrar na pasta do app
+        run: cd NanoTrader && ls
+
       - name: Instalar dependências
+        working-directory: NanoTrader
         run: npm install
 
       - name: Construir APK Android
+        working-directory: NanoTrader
         run: npx expo prebuild && npx expo run:android --variant release
 
       - name: Salvar APK como artefato
         uses: actions/upload-artifact@v4
         with:
           name: NanoTraderPro-APK
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: NanoTrader/android/app/build/outputs/apk/release/app-release.apk
